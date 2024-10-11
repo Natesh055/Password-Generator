@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - master
+      - master 
 
 jobs:
   build:
@@ -14,10 +14,18 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
 
+      - name: Cache npm dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install dependencies
         uses: bahmutov/npm-install@v1
@@ -35,7 +43,7 @@ jobs:
     name: Deploy
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
 
     steps:
       - name: Download artifact
